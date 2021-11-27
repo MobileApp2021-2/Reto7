@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/information"
+            android:layout_weight="0"
+            android:padding="1dp"
+            android:textStyle="bold"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:textSize="40sp"
+            android:layout_width="match_parent"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"
+            android:text="turn" />
+
+        <LinearLayout
+            android:layout_weight="0"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_weight="0"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+                <com.agaldanaw.reto3.BoardView
+                    android:id="@+id/board"
+                    android:layout_centerInParent="true"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_weight="0"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/layout_info"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:id="@+id/humanWins"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:layout_weight="1"
+                        android:textSize="25sp"
+                        android:textColor="@color/teal_200"
+                        android:text="Human: {0}" />
+
+                    <TextView
+                        android:id="@+id/ties"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/white"
+                        android:textSize="25sp"
+                        android:textAlignment="center"
+                        android:text="Ties: {0}" />
+                    <TextView
+                        android:id="@+id/computerWins"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="25sp"
+                        android:textAlignment="center"
+                        android:textColor="@color/teal_700"
+                        android:text="Android: {0}" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/playAgain"
+                    android:layout_weight="1"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="25sp"
+                    android:layout_marginTop="25dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/layout_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/yellow"
+                    android:textColor="@color/black"
+                    android:text="@string/play_again" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

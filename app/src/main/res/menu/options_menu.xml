@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/new_game"
+        android:title="@string/reboot"
+        android:icon="@mipmap/ic_launcher" />
+    <item android:id="@+id/ai_difficulty"
+        android:title="@string/difficulty_choose"
+        android:icon="@mipmap/ic_launcher" />
+    <item android:id="@+id/about"
+        android:title="@string/about"
+        android:icon="@mipmap/ic_launcher" />
+    <item android:id="@+id/reset"
+        android:title="@string/reset_scores"
+        android:icon="@mipmap/ic_launcher" />
+    <item android:id="@+id/quit"
+        android:title="@string/quit"
+        android:icon="@mipmap/ic_launcher" />
+</menu>
