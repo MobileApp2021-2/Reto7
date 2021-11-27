@@ -1,5 +1,5 @@
 # Reto 7
-Para esta versión se habiitan las sigueintes funciones:
+Para esta versión se habiitan las siguientes funciones:
 
 - Crear un tablero
 - Una persona puede unirse a mi tablero
