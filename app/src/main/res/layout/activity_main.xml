@@ -19,9 +19,24 @@
             android:textSize="50sp"
             android:layout_width="match_parent"
             android:textAlignment="center"
-            android:textColor="@color/white"
+            android:textColor="@color/teal_200"
             android:layout_height="wrap_content"
-            android:text="turn" />
+            android:text="Waiting Player..." />
+
+    <TextView
+        android:id="@+id/currentBoard"
+        android:layout_weight="0"
+        android:padding="1dp"
+        android:textStyle="bold"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:layout_height="wrap_content"
+        android:text="board" />
 
         <RelativeLayout
             android:layout_weight="1"
@@ -56,7 +71,7 @@
                 android:layout_weight="1"
                 android:textSize="25sp"
                 android:textColor="@color/teal_200"
-                android:text="Human: {0}" />
+                android:text="Score1: {0}" />
 
             <TextView
                 android:id="@+id/ties"
@@ -75,7 +90,7 @@
                 android:textSize="25sp"
                 android:textAlignment="center"
                 android:textColor="@color/teal_700"
-                android:text="Android: {0}" />
+                android:text="Score2: {0}" />
         </LinearLayout>
 
     <LinearLayout
@@ -99,15 +114,7 @@
             android:backgroundTint="@color/yellow"
             android:textColor="@color/black"
             android:text="@string/play_again" />
-<!--        <Button
-            android:id="@+id/rebootGame"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="25sp"
-            android:backgroundTint ="@color/red"
-            android:text="@string/reboot" />-->
+
     </LinearLayout>
 
 

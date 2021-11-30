@@ -261,9 +261,9 @@ public class TicTacToeGame {
         int player = mRand.nextInt(2);
         if(player < 1)
         {
-            //computer turn
-            int move = GetComputerMove();
-            setMove(COMPUTER_PLAYER, move);
+//            //computer turn
+//            int move = GetComputerMove();
+//            setMove(COMPUTER_PLAYER, move);
             currentInitPlayer = COMPUTER_PLAYER;
             return COMPUTER_PLAYER;
         }
@@ -300,11 +300,15 @@ public class TicTacToeGame {
      * @param player - The HUMAN_PLAYER or COMPUTER_PLAYER
      * @param location - The location (0-8) to place the move
      */
-    public void setMove(char player, int location)
+    public boolean setMove(char player, int location)
     {
         if(mBoard[location] != HUMAN_PLAYER && mBoard[location] != COMPUTER_PLAYER )
         {
             mBoard[location] = player;
+            return true;
         }
+        return false;
     }
+
+
 }
