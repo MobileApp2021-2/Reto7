@@ -33,6 +33,7 @@ import io.reactivex.functions.Action;
 
 public class BoardActivity extends AppCompatActivity implements View.OnTouchListener{
 
+    static final int  DIALOG_QUIT_ID = 1;
     public static String playerId;
     private SharedPreferences mPrefs;
 
@@ -71,7 +72,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
 
         _hubConnection = HubConnectionBuilder.create(MainActivity.URL_HUB).build();
 
-
         _hubConnection.on("NewMovementReceive", (movement) -> {
             setMove(movement);
         }, Integer.class);
@@ -82,8 +82,20 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
 
         _hubConnection.on("UserJoined", () -> {
             Log.e("user Joined Board", "join");
-            ShowToast(this);
+            ShowToast(this, "User joined");
             startGame();
+        });
+
+        _hubConnection.on("SecondPlayerLeaveGame", () -> {
+            Log.e("Second player leave the room", "board");
+            ShowToast(this, "2nd player leave the room, the game is over");
+            FinishActivity(this);
+        });
+
+        _hubConnection.on("FirstPlayerLeaveGame", () -> {
+            Log.e("First player leave the room", "join");
+            ShowToast(this, "1st player leave the room, the game is over");
+            FinishActivity(this);
         });
 
         DoOnConnect = () -> {
@@ -109,31 +121,18 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
         mBoard = (BoardView) findViewById(R.id.board);
         mGame = new TicTacToeGame();
         mBoard.setGame(mGame);
-//        if (savedInstanceState == null) {
-//            startGame();
-//            mBoard.setGame(mGame);
-//        }
+
+        if (savedInstanceState == null) {
+            mBoard.setGame(mGame);
+            mBoard.invalidate();
+        }
 
         mBoard.setOnTouchListener(this);
-//
-//
-//        // Restore the scores
-//        mGame.UpdateHumanWins(mPrefs.getInt("mHumanWins", 0));
-//        mGame.updateComputerWins(mPrefs.getInt("mComputerWins", 0));
-//        mGame.UpdateTies(mPrefs.getInt("mTies", 0));
-//
-//        int difficultyLevel = mPrefs.getInt("difficultyLevel", getDifficultyLevelInteger() );
-//        setDifficultyLevelInteger(difficultyLevel);
-//        startGame();
-//        SetTextWins();
+    }
 
-//        String idPlayer = mPrefs.getString("idPlayer", RandomstringUUID.GetGUID());
-
-//        if(secondPlayer != null && MainActivity._hubConnection.getConnectionState() == HubConnectionState.CONNECTED)
-//        {
-//            MainActivity._hubConnection.send("JoinBoard",groupName, boardId,  mPrefs.getString("idPlayer", RandomstringUUID.GetGUID()) );
-//        }
-
+    private void FinishActivity(Context context)
+    {
+        ((AppCompatActivity)(context)).finish();
     }
 
     @Override
@@ -142,47 +141,10 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-
-//        if(_hubConnection.getConnectionState() == HubConnectionState.CONNECTED)
-//        {
-//            _hubConnection.stop();
-//        }
-//        //// Save the current scores
-//        SharedPreferences.Editor ed = mPrefs.edit();
-//        ed.putInt("mHumanWins", Integer.valueOf(mGame.GetHumanWins()));
-//        ed.putInt("mComputerWins", Integer.valueOf(mGame.GetComputerWins()));
-//        ed.putInt("mTies", Integer.valueOf(mGame.GetTies()));
-//        ed.putInt("difficultyLevel", getDifficultyLevelInteger()  );
-//        ed.commit();
-    }
-
-    @Override
     protected void onResume() {
         mHumanMediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.human);
         mComputerMediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.android);
-        if(_hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
-        {
-//            try {
-//                _hubConnection.start().doOnComplete(() -> {
-//                    DoOnConnect(this);
-//                });
-//            }
-//            catch (Exception e)
-//            {
-//
-//            }
-//
-//            if(_hubConnection.getConnectionState() == HubConnectionState.CONNECTED)
-//            {
-//                if(secondPlayer != null )
-//                    _hubConnection.send("JoinBoard", groupName, boardId, secondPlayer);
-//                else
-//                    _hubConnection.send("JoinBoard", groupName, boardId, "");
-//            }
-        }
-        else
+        if(_hubConnection.getConnectionState() == HubConnectionState.CONNECTED)
         {
             if(secondPlayer != null )
                 _hubConnection.send("JoinBoard", groupName, boardId, secondPlayer);
@@ -207,12 +169,12 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
         });
     }
 
-    public void ShowToast(Context context)
+    public void ShowToast(Context context, String message)
     {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(context, "Se ha unido un usuario", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -239,32 +201,30 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
         @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-//        mGame.setmBoard(savedInstanceState.getCharArray("board"));
-//        mGame.mGameOver = savedInstanceState.getBoolean("mGameOver");
-//        mInfoTextView.setText(savedInstanceState.getCharSequence("info"));
-//        mGame.UpdateHumanWins(savedInstanceState.getInt("mHumanWins"));
-//        mGame.UpdateTies(savedInstanceState.getInt("mTies"));
-//        mGame.updateComputerWins(savedInstanceState.getInt("mComputerWins"));
-//        mGame.currentInitPlayer = savedInstanceState.getChar("mGoFirst");
-//        int difficultyLevel = savedInstanceState.getInt("difficultyLevel");
-//        setDifficultyLevelInteger(difficultyLevel);
-//        mBoard.setGame(mGame);
-//        mBoard.invalidate();
-//        SetTextWins();
+        mGame.setmBoard(savedInstanceState.getCharArray("board"));
+        mGame.mGameOver = savedInstanceState.getBoolean("mGameOver");
+        mInfoTextView.setText(savedInstanceState.getCharSequence("info"));
+        mGame.UpdateHumanWins(savedInstanceState.getInt("mHumanWins"));
+        mGame.UpdateTies(savedInstanceState.getInt("mTies"));
+        mGame.updateComputerWins(savedInstanceState.getInt("mComputerWins"));
+        mGame.currentInitPlayer = savedInstanceState.getChar("mGoFirst");
+        int difficultyLevel = savedInstanceState.getInt("difficultyLevel");
+        setDifficultyLevelInteger(difficultyLevel);
+        mBoard.setGame(mGame);
+        mBoard.invalidate();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        outState.putCharArray("board", mGame.getmBoard());
-//        outState.putBoolean("mGameOver", mGame.mGameOver);
-//        outState.putInt("mHumanWins", Integer.valueOf(mGame.GetHumanWins()));
-//        outState.putInt("mComputerWins", Integer.valueOf(mGame.GetComputerWins()));
-//        outState.putInt("mTies", Integer.valueOf(mGame.GetTies()));
-//        outState.putCharSequence("info", mInfoTextView.getText());
-//        outState.putChar("mGoFirst", mGame.currentInitPlayer);
-//        outState.putInt("difficultyLevel", getDifficultyLevelInteger()  );
-
+        outState.putCharArray("board", mGame.getmBoard());
+        outState.putBoolean("mGameOver", mGame.mGameOver);
+        outState.putInt("mHumanWins", Integer.valueOf(mGame.GetHumanWins()));
+        outState.putInt("mComputerWins", Integer.valueOf(mGame.GetComputerWins()));
+        outState.putInt("mTies", Integer.valueOf(mGame.GetTies()));
+        outState.putCharSequence("info", mInfoTextView.getText());
+        outState.putChar("mGoFirst", mGame.currentInitPlayer);
+        outState.putInt("difficultyLevel", getDifficultyLevelInteger()  );
     }
 
     @Override
@@ -399,28 +359,15 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
                 {
                     _hubConnection.send("SendMessageNewMovement", groupName, pos );
                 }
-//                 If no winner yet, let the computer make a move
                 winner = mGame.checkForWinner();
                 computerTurn = true;
                 if (winner == 0) {
                     mInfoTextView.setText(R.string.turn_computer);
-//                    Handler handler = new Handler();
-//                    handler.postDelayed(new Runnable() {
-//                        public void run() {
-//                            mComputerMediaPlayer.start();
-//                            int move = mGame.GetComputerMove();
-//                            mGame.setMove(TicTacToeGame.COMPUTER_PLAYER, move);
-//                            winner = mGame.checkForWinner();
-//                            setWinner(winner);
-//                            computerTurn = false;
-//                        }
-//                    }, 500);
                 }
                 else if(winner == 1 || winner == 2)
                     setWinner(winner);
             }
         }
-        // So we aren't notified of continued events when finger is moved
         return false;
     }
 
@@ -454,18 +401,8 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-//            case R.id.new_game:
-//                startGame();
-//                return true;
-//            case R.id.ai_difficulty:
-//                ShowDialog(MainActivity.);
-//                return true;
             case R.id.quit:
                 ShowDialog(MainActivity.DIALOG_QUIT_ID);
-                return true;
-            case R.id.reset:
-                mGame.ResetScores();
-                SetTextWins();
                 return true;
         }
         return false;
@@ -494,50 +431,28 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
     public void ShowDialog(int id) {
         Dialog dialog = null;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        switch(id) {
-////            case DIALOG_DIFFICULTY_ID:
-////                builder.setTitle(R.string.difficulty_choose);
-////                final CharSequence[] levels = {
-////                        getResources().getString(R.string.difficulty_level_easy),
-////                        getResources().getString(R.string.difficulty_level_hard),
-////                        getResources().getString(R.string.difficulty_level_expert)};
-////
-////                builder.setSingleChoiceItems(levels, getDifficultyLevelInteger(),
-////                        new DialogInterface.OnClickListener() {
-////                            public void onClick(DialogInterface dialog, int item) {
-////                                dialog.dismiss(); // Close dialog
-////                                setDifficultyLevelInteger(item);
-////                                startGame();
-////                                Toast.makeText(getApplicationContext(), levels[item],
-////                                        Toast.LENGTH_SHORT).show();
-////
-////                            }
-////                        });
-////                dialog = builder.create();
-////                break;
-//            case Maint.DIALOG_QUIT_ID:
-//                builder.setMessage(R.string.quit_question)
-//                        .setCancelable(false)
-//                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//                                this.finish();
-//                            }
-//                        })
-//                        .setNegativeButton(R.string.no, null);
-//                dialog = builder.create();
-//                break;
-//            case DIALOG_ABOUT_ID:
-//                Context context = getApplicationContext();
-//                LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-//                View layout = inflater.inflate(R.layout.about_dialog, null);
-//                Drawable icon = context.getDrawable(R.drawable.icon);
-//                builder.setIcon(icon);
-//                builder.setView(layout);
-//                builder.setPositiveButton("OK", null);
-//                dialog = builder.create();
-//                dialog.setTitle(R.string.app_name);
-//                break;
-//        }
+        switch(id) {
+
+            case DIALOG_QUIT_ID:
+                builder.setMessage(R.string.leave_board)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                if(_hubConnection.getConnectionState() == HubConnectionState.CONNECTED)
+                                {
+                                    if (secondPlayer != null)
+                                        _hubConnection.send("SendMessageLeaveRoomSecondPlayer", groupName, boardId);
+                                    else
+                                        _hubConnection.send("SendMessageLeaveRoomFirstPlayer", groupName, boardId);
+                                }
+
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.no, null);
+                dialog = builder.create();
+                break;
+        }
 
         dialog.show();
     }

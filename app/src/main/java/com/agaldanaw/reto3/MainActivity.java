@@ -71,7 +71,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public static String URL_API_AVAILABLE_BOARD = "http://tictactoeapi-dev.us-east-1.elasticbeanstalk.com/api/TicTacToe/IsBoardAvailable/";
     public static String URL_API_CREATE_BOARD = "http://tictactoeapi-dev.us-east-1.elasticbeanstalk.com/api/TicTacToe/CreateBoard/";
     public static String URL_HUB = "http://tictactoeapi-dev.us-east-1.elasticbeanstalk.com/tictactoe";
-//
+
+    public HubConnection _hubConnection;
 //    public static String URL_API_GET_BOARDS = "https://0b05-2800-484-6d87-e310-6114-2f98-b49-2fb4.ngrok.io/api/TicTacToe/GetAvailableBoards";
 //    public static String URL_API_AVAILABLE_BOARD = "https://0b05-2800-484-6d87-e310-6114-2f98-b49-2fb4.ngrok.io/api/TicTacToe/IsBoardAvailable/";
 //    public static String URL_API_CREATE_BOARD = "https://0b05-2800-484-6d87-e310-6114-2f98-b49-2fb4.ngrok.io/api/TicTacToe/CreateBoard/";
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         TextView empylist = (TextView)findViewById(R.id.emptyList);
         _listView.setEmptyView(empylist);
 
-
         findViewById(R.id.createBoard).setOnClickListener(new ButtonCreateBoardClickListener(this));
 
         mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
@@ -94,10 +94,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         SharedPreferences.Editor ed = mPrefs.edit();
         ed.putString("idPlayer", idPlayer);
         ed.commit();
-        GetRequest(this);
+
+        _hubConnection = HubConnectionBuilder.create(MainActivity.URL_HUB).build();
+        _hubConnection.on("RefreshBoard", () -> {
+            GetRequest(this);
+        });
+        _hubConnection.start();
+
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        GetRequest(this);
+    }
 
     public void GetRequest(Context context)
     {
@@ -110,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 , new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        _list = GetList(response);
-                        fillListview();
+                        UpdateList(response);
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -127,6 +137,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(request);
+    }
+
+    private void UpdateList(JSONArray response) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                _list = GetList(response);
+                fillListview();
+            }
+        });
+
     }
 
     @Override
@@ -180,10 +201,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }catch(Exception e)
         {
-
         }
-
-
     }
 
 

@@ -21,7 +21,7 @@
             android:textAlignment="center"
             android:textColor="@color/teal_200"
             android:layout_height="wrap_content"
-            android:text="Waiting Player..." />
+            android:text="Waiting for a Player..." />
 
     <TextView
         android:id="@+id/currentBoard"

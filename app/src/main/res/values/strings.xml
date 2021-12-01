@@ -25,4 +25,6 @@
     <string name="developer">By Andrés Aldana</string>
     <string name="information_app">Choose from one of three difficulty levels. Don´t let the Android beat you!</string>
     <string name="reset_scores">Reset Scores</string>
+    <string name="leave_board">Do you want leave the game?</string>
+
 </resources>
