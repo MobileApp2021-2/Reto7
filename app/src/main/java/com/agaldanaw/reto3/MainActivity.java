@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public static String URL_API_GET_BOARDS = "http://tictactoeapi-dev.us-east-1.elasticbeanstalk.com/api/TicTacToe/GetAvailableBoards";
     public static String URL_API_AVAILABLE_BOARD = "http://tictactoeapi-dev.us-east-1.elasticbeanstalk.com/api/TicTacToe/IsBoardAvailable/";
     public static String URL_API_CREATE_BOARD = "http://tictactoeapi-dev.us-east-1.elasticbeanstalk.com/api/TicTacToe/CreateBoard/";
-    public static String URL_HUB = "http://tictactoeapi-dev.us-east-1.elasticbeanstalk.com/tictactoe";
 
     public HubConnection _hubConnection;
 //    public static String URL_API_GET_BOARDS = "https://0b05-2800-484-6d87-e310-6114-2f98-b49-2fb4.ngrok.io/api/TicTacToe/GetAvailableBoards";
@@ -95,12 +94,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         ed.putString("idPlayer", idPlayer);
         ed.commit();
 
-        _hubConnection = HubConnectionBuilder.create(MainActivity.URL_HUB).build();
+        _hubConnection = SingletonHub.GetInstance();
         _hubConnection.on("RefreshBoard", () -> {
             GetRequest(this);
         });
         _hubConnection.start();
-
     }
 
     @Override

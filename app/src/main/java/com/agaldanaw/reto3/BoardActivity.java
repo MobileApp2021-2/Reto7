@@ -70,7 +70,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
 
         mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
 
-        _hubConnection = HubConnectionBuilder.create(MainActivity.URL_HUB).build();
+        _hubConnection = SingletonHub.GetInstance();
 
         _hubConnection.on("NewMovementReceive", (movement) -> {
             setMove(movement);
@@ -101,15 +101,15 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
         DoOnConnect = () -> {
             DoOnConnect(this);
         };
+        if(_hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
+        {
+            _hubConnection.start().doAfterTerminate(DoOnConnect);
 
-        _hubConnection.start().doAfterTerminate(DoOnConnect);
+        }
         try {
             Thread.sleep(2000);
         }
-        catch (Exception e)
-        {
-
-        }
+        catch (Exception e){}
 
         // verificar el id del segundo player
 //
@@ -120,7 +120,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
         findViewById(R.id.playAgain).setOnClickListener(new ButtonPlayAgainClickListener());
         mBoard = (BoardView) findViewById(R.id.board);
         mGame = new TicTacToeGame();
-        mBoard.setGame(mGame);
 
         if (savedInstanceState == null) {
             mBoard.setGame(mGame);
@@ -142,8 +141,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
 
     @Override
     protected void onResume() {
-        mHumanMediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.human);
-        mComputerMediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.android);
         if(_hubConnection.getConnectionState() == HubConnectionState.CONNECTED)
         {
             if(secondPlayer != null )
@@ -152,6 +149,8 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
                 _hubConnection.send("JoinBoard", groupName, boardId, "");
         }
         super.onResume();
+        mHumanMediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.human);
+        mComputerMediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.android);
     }
 
 
@@ -160,7 +159,12 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mComputerMediaPlayer.start();
+                try {
+                    mComputerMediaPlayer.start();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
                 mGame.setMove(TicTacToeGame.COMPUTER_PLAYER, movement);
                 winner = mGame.checkForWinner();
                 setWinner(winner);
@@ -191,14 +195,12 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
 
     }
 
-
-
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
     }
 
-        @Override
+    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mGame.setmBoard(savedInstanceState.getCharArray("board"));
@@ -208,8 +210,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
         mGame.UpdateTies(savedInstanceState.getInt("mTies"));
         mGame.updateComputerWins(savedInstanceState.getInt("mComputerWins"));
         mGame.currentInitPlayer = savedInstanceState.getChar("mGoFirst");
-        int difficultyLevel = savedInstanceState.getInt("difficultyLevel");
-        setDifficultyLevelInteger(difficultyLevel);
         mBoard.setGame(mGame);
         mBoard.invalidate();
     }
@@ -224,7 +224,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnTouchList
         outState.putInt("mTies", Integer.valueOf(mGame.GetTies()));
         outState.putCharSequence("info", mInfoTextView.getText());
         outState.putChar("mGoFirst", mGame.currentInitPlayer);
-        outState.putInt("difficultyLevel", getDifficultyLevelInteger()  );
     }
 
     @Override

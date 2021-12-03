@@ -14,7 +14,6 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".BoardActivity"
-            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".MainActivity"
